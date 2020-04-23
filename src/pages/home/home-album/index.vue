@@ -81,7 +81,7 @@ export default {
         });
       } else {
         // 调整skip个数 跳过之前的
-        this.params.skip = this.params.limit;
+        this.params.skip += this.params.limit;
         // 重新获取数据
         this.getListData();
       }

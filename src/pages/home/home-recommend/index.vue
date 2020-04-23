@@ -7,10 +7,14 @@
   >
     <!-- 推荐区域 -->
     <view class="recommend-wrapper">
-      <view class="recommend-img" v-for="item in recommendList" :key="item.id">
+      <navigator 
+      class="recommend-img" 
+      v-for="item in recommendList" 
+      :key="item.id"
+      :url="`/pages/album/index?id=${item.target}`">
         <!-- 推荐图片区域，宽度自适应 -->
         <image :src="item.thumb" mode="widthFix" />
-      </view>
+      </navigator>
     </view>
     <!-- 月份显示区域 -->
     <view class="month-wrapper">
@@ -121,7 +125,7 @@ export default {
       border: 3rpx solid #fff;
     }
   }
-  view.month-wrapper {
+  .month-wrapper {
     view.month-title {
       padding: 20rpx;
       display: flex;
@@ -153,7 +157,7 @@ export default {
       }
     }
   }
-  view.hots {
+  .hots {
     view.hots-title {
       border-left: 5rpx solid $color;
       padding-left: 20rpx;

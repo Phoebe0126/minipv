@@ -8,6 +8,25 @@
             <view class="album-btn">关注专辑</view>
         </view>
     </view>
+    <!-- 专辑描述 -->
+    <view class="album-info">
+        <view class="album-title">
+            <view class="img-avatar">
+                <image :src="album.user.avatar" mode="widthFix" />
+            </view>
+            <view class="album-user-name">{{album.user.name}}</view>
+        </view>
+        <view class="album-desc">
+            <!-- 为了识别换行符，记得用text -->
+            <text>{{album.desc}}</text>
+        </view>
+    </view>
+    <!-- 图片浏览 -->
+    <view class="wallpaper">
+        <view class="image-wrapper" v-for="item in wallpaper" :key="item.id">
+            <image :src="item.thumb+item.rule.replace('$<Height>',360)" mode="aspectFill" />
+        </view>
+    </view>
   </view>
 </template>
 
@@ -25,7 +44,8 @@ export default {
             first: 1, // 第一次请求ornot,  
         },
         album: {},
-        wallpaper: []
+        wallpaper: [],
+        hasMore: true
       }
     },
     onLoad (option) {
@@ -37,6 +57,18 @@ export default {
     mounted () {
         this.getDataList()
     },
+    // 页面触底 加载新的图片
+    onReachBottom () {
+        if (!this.hasMore) {
+            uni.showToast({
+                title: '暂时无更多图片~',
+                icon: 'none'
+            });
+        } else {
+            this.params.skip += this.params.limit
+            this.getDataList()
+        }
+    },
     methods: {
         getDataList () {
             this.request({
@@ -44,12 +76,17 @@ export default {
                 data: this.params
             })
             .then(result => {
+                // 返回的wallpaper无
+                if (result.res.wallpaper.length === 0) {
+                    this.hasMore = false
+                    return 
+                }
                 // 第一次获取
                 if (Object.keys(this.album).length === 0) {
                     this.album = result.res.album
                 }
-                this.wallpaper = result.res.wallpaper
-                
+                // 和之前的拼接
+                this.wallpaper = [...this.wallpaper, ...result.res.wallpaper]
             })
         }
     }
@@ -81,6 +118,32 @@ view.background {
         justify-content: center;
         align-items: center;
         border-radius: 10rpx;
+    }
+  }
+}
+view.album-info {
+    padding: 10rpx;
+  view.album-title {
+      padding: 10rpx 0;
+      display: flex;
+      align-items: center;
+    view.img-avatar {
+        width: 100rpx;
+    }
+    view.album-user-name {
+        margin-left: 10rpx;
+        color: #000;
+    }
+  }
+}
+view.wallpaper {
+    display: flex;
+    flex-wrap: wrap;
+  view.image-wrapper {
+      flex: 33.33%;
+      border: 3rpx solid #fff;
+    image {
+        height: 200rpx;
     }
   }
 }
