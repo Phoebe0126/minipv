@@ -7,11 +7,12 @@
   >
     <!-- 推荐区域 -->
     <view class="recommend-wrapper">
-      <navigator 
-      class="recommend-img" 
-      v-for="item in recommendList" 
-      :key="item.id"
-      :url="`/pages/album/index?id=${item.target}`">
+      <navigator
+        class="recommend-img"
+        v-for="item in recommendList"
+        :key="item.id"
+        :url="`/pages/album/index?id=${item.target}`"
+      >
         <!-- 推荐图片区域，宽度自适应 -->
         <image :src="item.thumb" mode="widthFix" />
       </navigator>
@@ -27,11 +28,18 @@
         <view class="month-more">更多 > </view>
       </view>
       <view class="month-content">
-        <view class="month-img" v-for="item in monthObj.items" :key="item.id">
-          <image
-            :src="item.thumb + item.rule.replace('$<Height>', 320)"
-            mode="aspectFill"
-          />
+        <!-- 图片详情组件 -->
+        <view
+          class="month-img"
+          v-for="(item, index) in monthObj.items"
+          :key="item.id"
+        >
+          <go-detail :list="monthObj.items" :index="index">
+            <image
+              :src="item.thumb + item.rule.replace('$<Height>', 320)"
+              mode="aspectFill"
+            />
+          </go-detail>
         </view>
       </view>
     </view>
@@ -41,8 +49,10 @@
         <text>热门</text>
       </view>
       <view class="hots-imgs">
-        <view class="hots-img" v-for="item in hotsList" :key="item.id">
-          <image :src="item.thumb" mode="aspectFill" />
+        <view class="hots-img" v-for="(item,index) in hotsList" :key="item.id">
+          <go-detail :list="hotsList" :index="index">
+              <image :src="item.thumb" mode="aspectFill" />
+          </go-detail>
         </view>
       </view>
     </view>
@@ -51,7 +61,11 @@
 
 <script>
 import moment from "moment";
+import goDetail from "@/components/goDetail";
 export default {
+  components: {
+    goDetail
+  },
   data() {
     return {
       // 推荐列表
@@ -82,8 +96,8 @@ export default {
       }).then(result => {
         // 判断是否还有图片
         if (result.res.vertical.length === 0) {
-            this.hasMore = false
-            return
+          this.hasMore = false;
+          return;
         }
         // 避免重复赋值 第一次请求时
         if (this.recommendList.length === 0) {
@@ -93,21 +107,21 @@ export default {
           this.monthObj.DD = moment(this.monthObj.stime).format("DD");
           this.monthObj.MM = moment(this.monthObj.stime).format("MM");
         }
-          // 组合之前的热门列表
-          this.hotsList = [...this.hotsList, ...result.res.vertical];
+        // 组合之前的热门列表
+        this.hotsList = [...this.hotsList, ...result.res.vertical];
       });
     },
     handleToLower() {
       // 调整skip个数 跳过之前的
-      this.params.skip += this.params.limit
+      this.params.skip += this.params.limit;
       // 重新发起请求
-      this.getData()
+      this.getData();
       // 图片已经请求完
       if (!this.hasMore) {
-          uni.showToast({
-              title: '已经没有图片了哟~',
-              duration: 2000
-          });
+        uni.showToast({
+          title: "已经没有图片了哟~",
+          duration: 2000
+        });
       }
     }
   }
@@ -115,8 +129,8 @@ export default {
 </script>
 <style lang="scss">
 .scroll-view {
-    // 必须设置scroll-view的高度才可以使用，忽略底部tabbar，减去头部tab即可
-    height: calc(100vh - 36px);
+  // 必须设置scroll-view的高度才可以使用，忽略底部tabbar，减去头部tab即可
+  height: calc(100vh - 36px);
   .recommend-wrapper {
     display: flex;
     flex-wrap: wrap;

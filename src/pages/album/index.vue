@@ -23,15 +23,21 @@
     </view>
     <!-- 图片浏览 -->
     <view class="wallpaper">
-        <view class="image-wrapper" v-for="item in wallpaper" :key="item.id">
-            <image :src="item.thumb+item.rule.replace('$<Height>',360)" mode="aspectFill" />
-        </view>
+        <view class="image-wrapper" v-for="(item,index) in wallpaper" :key="item.id">
+            <go-detail :list="wallpaper" :index="index">
+                 <image :src="item.thumb+item.rule.replace('$<Height>',360)" mode="aspectFill" />
+            </go-detail>
+            </view>
     </view>
   </view>
 </template>
 
 <script>
+import goDetail from '@/components/goDetail'
 export default {
+    components: {
+        goDetail
+    },
     data () {
       return {
             // 专辑id
