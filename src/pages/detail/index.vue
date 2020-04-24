@@ -12,7 +12,9 @@
     </view>
     <!-- 大图显示区域 -->
     <view class="big-img">
-      <image :src="imgDetail.newThumb" mode="widthFix" />
+      <touch-swiper @swiperaction="handleSwiperAction">
+        <image :src="imgDetail.thumb" mode="widthFix" />
+      </touch-swiper>
     </view>
     <!-- 点赞收藏区域 -->
     <view class="user-rank">
@@ -24,7 +26,7 @@
       </view>
     </view>
     <!-- 专辑区域 -->
-    <view class="album-wrapper">
+    <view class="album-wrapper" v-if="album.length">
       <!-- 标题 -->
       <view class="album-title">相关</view>
       <!-- 内容 -->
@@ -44,14 +46,97 @@
         </view>
       </view>
     </view>
+    <!-- 最热评论区域 -->
+    <view class="comments hot" v-if="hot.length">
+      <!-- 标题 -->
+      <view class="comments-title">
+        <text class="iconfont iconhot1"></text>
+        <view class="comments-title-name">最热评论</view>
+      </view>
+      <!-- 内容主体区域 -->
+      <view class="comments-list">
+        <view 
+        class="comments-item"
+        v-for="item in hot"
+        :key="item.id">
+        <view class="user-info">
+          <!-- 用户头像 -->
+          <view class="user-avatar">
+            <image :src="item.user.avatar" mode="widthFix" />
+          </view>
+          <!-- 用户描述 -->
+          <view class="user-desc">
+            <view class="user-name">{{item.user.name}}</view>
+            <view class="user-time">{{item.cnTime}}</view>
+          </view>
+          <!-- 用户徽章 -->
+          <view class="user-badge">
+            <image v-for="item2 in item.user.title" :key="item2.icon" :src="item2.icon" mode="" />
+          </view>
+          </view>
+          <!-- 评论内容 -->
+          <view class="content-desc">
+            <view class="comment-content">{{item.content}}</view>
+            <view class="comment-likes">
+              <text class="iconfont icondianzan">{{item.size}}</text>
+            </view>
+          </view>
+        
+        </view>
+      </view>
+    </view>
+    <!-- 最新评论区域 -->
+    <view class="comments new" v-if="comment.length">
+      <!-- 标题 -->
+      <view class="comments-title">
+        <text class="iconfont iconpinglun"></text>
+        <view class="comments-title-name">最新评论</view>
+      </view>
+      <!-- 内容主体区域 -->
+      <view class="comments-list">
+        <view 
+        class="comments-item"
+        v-for="item in comment"
+        :key="item.id">
+        <view class="user-info">
+          <!-- 用户头像 -->
+          <view class="user-avatar">
+            <image :src="item.user.avatar" mode="widthFix" />
+          </view>
+          <!-- 用户描述 -->
+          <view class="user-desc">
+            <view class="user-name">{{item.user.name}}</view>
+            <view class="user-time">{{item.cnTime}}</view>
+          </view>
+          <!-- 用户徽章 -->
+          <view class="user-badge">
+            <image v-for="item2 in item.user.title" :key="item2.icon" :src="item2.icon" mode="" />
+          </view>
+          </view>
+          <!-- 评论内容 -->
+          <view class="content-desc">
+            <view class="comment-content">{{item.content}}</view>
+            <view class="comment-likes">
+              <text class="iconfont icondianzan">{{item.size}}</text>
+            </view>
+          </view>
+        
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import moment from "moment";
+// 引入图片滑动组件
+import touchSwiper from '@/components/touchSwiper'
 // 设置moment为中文显示
 moment.locale("zh-cn");
 export default {
+  components: {
+    touchSwiper
+  },
   data() {
     return {
       // 图片信息数组，用户头像
@@ -59,7 +144,11 @@ export default {
       // 图片索引
       imgIndex: 0,
       // 专辑
-      album: []
+      album: [],
+      // 最热评论
+      hot: [],
+      // 最新评论
+      comment: []
     };
   },
   onLoad() {
@@ -76,9 +165,6 @@ export default {
       this.imgDetail = imgList[this.imgIndex];
       // 处理时间
       this.imgDetail.cnTime = moment(this.imgDetail.atime * 1000).fromNow();
-      // 处理大图
-      this.imgDetail.newThumb =
-        this.imgDetail.thumb + this.imgDetail.rule.replace("$<Height>", 360);
       // 获取图片详情的id
       this.getComments(this.imgDetail.id);
     },
@@ -88,7 +174,33 @@ export default {
         url: `http://157.122.54.189:9088/image/v2/wallpaper/wallpaper/${id}/comment`
       }).then(result => {
         this.album = result.res.album;
+        // 处理最热评论时间，变成xxx月前
+        result.res.hot.forEach(v => {
+          v.cnTime = moment(v.atime * 1000).fromNow()
+        })
+        result.res.comment.forEach(v=> {
+          v.cnTime = moment(v.atime * 1000).fromNow()
+        })
+        this.hot = result.res.hot
+        this.comment = result.res.comment
       });
+    },
+    // 处理图片滑动
+    handleSwiperAction (params) {
+      // 向左滑动,index--
+      if (params.direction === 'left' && this.imgIndex - 1 > 0) {
+        this.imgIndex--;
+        this.getData()
+      } else if (params.direction === 'right' && this.imgIndex + 1 < getApp().globalData.imgList.length - 1) {
+        this.imgIndex++;
+        this.getData()
+      } else {
+        // 数组越界
+        uni.showToast({
+          title: '暂时无更多数据',
+          icon: 'none'
+        });
+      }
     }
   }
 };
@@ -175,7 +287,7 @@ export default {
               border-radius: 10%;
           }
           .album-name {
-              color: #888;
+              color: #000;
               padding: 10rpx 0;
           }
           .iconfont {
@@ -188,5 +300,75 @@ export default {
         }
       }
     }
+}
+ .comments {
+   .comments-title {
+     display: flex;
+     align-items: center;
+    text.iconfont.iconhot1 {
+      color: red;
+      font-size: 40rpx;
+    }
+     .comments-title-name {
+       font-weight: 600;
+       font-size: 28rpx;
+       margin-left: 10rpx;
+       color: #666;
+    }
+  }
+   .comments-list {
+     .comments-item {
+       border-bottom: 10rpx solid #eee;
+       .user-info {
+         display: flex;
+         padding: 20rpx 0;
+         .user-avatar {
+            width: 15%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          image {
+            width: 90%;
+          }
+        }
+         .user-desc {
+           display: flex;
+           .user-name {
+             color: #777;
+          }
+           .user-time {
+             color: #ccc;
+             font-size: 24rpx;
+             padding: 5rpx;
+          }
+        }
+         .user-badge {
+          image {
+            width: 40rpx;
+            height: 40rpx;
+            display: inline-block;
+          }
+        }
+       }
+         .content-desc {
+           display: flex;
+           padding: 30rpx 0;
+           .comment-content {
+             flex: 1;
+             padding-left: 15%;
+             color: #000;
+          }
+
+           .comment-likes {
+            text-align: right;
+          }
+        }
+    }
+  }
+}
+.new {
+  .iconpinglun {
+    color: skyblue !important;
+  }
 }
 </style>
