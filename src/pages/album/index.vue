@@ -58,8 +58,7 @@ export default {
         uni.setNavigationBarTitle({
             title: '专辑详情'
         });
-        // this.id = option.id
-        this.id = '5d5f8e45e7bce75ae7fb8278'
+        this.id = option.id
     },
     mounted () {
         this.getDataList()

@@ -1,42 +1,94 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view>
-			<text class="title">{{title}}</text>
-		</view>
-	</view>
+  <view class="tab">
+    <view class="tab-title">
+      <view class="tab-inner"
+        ><uni-segmented-control
+          :current="current"
+          :values="items.map(v => v.title)"
+          @clickItem="onClickItem"
+          style-type="text"
+          active-color="#fa7298"
+        ></uni-segmented-control
+      ></view>
+      <view class="iconfont iconsearch"></view>
+    </view>
+    <view class="tab-content">
+      <view v-if="current < 4">
+        <video-main :urlObj="{url:items[current].url,params:items[current].params}"></video-main>
+      </view>
+      <view v-if="current === 4">
+        <video-cate></video-cate>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				title: 'Hello'
-			}
-		},
-		onLoad() {
-
-		},
-		methods: {
-
-		}
-	}
+import { uniSegmentedControl } from "@dcloudio/uni-ui";
+import {VideoMain} from './video_main/index';
+import {VideoCate} from './video_cate/index'
+export default {
+  components: {
+	uniSegmentedControl,
+	VideoMain,
+	VideoCate
+  },
+  data() {
+    return {
+      items: [
+        {
+          title: "推荐",
+          url: "http://157.122.54.189:9088/videoimg/v1/videowp/featured",
+          params: { limit: 30, skip: 0, order: "hot" }
+        },
+        {
+          title: "娱乐",
+          url:
+            "http://157.122.54.189:9088/videoimg/v1/videowp/category/59b25abbe7bce76bc834198a",
+          params: { limit: 30, skip: 0, order: "new" }
+        },
+        {
+          title: "最新",
+          url: "http://157.122.54.189:9088/videoimg/v1/videowp/videowp",
+          params: { limit: 30, skip: 0, order: "new" }
+        },
+        {
+          title: "热门",
+          url: "http://157.122.54.189:9088/videoimg/v1/videowp/videowp",
+          params: { limit: 30, skip: 0, order: "hot" }
+        },
+        {
+          title: "分类",
+          url: "http://157.122.54.189:9088/videoimg/v1/videowp/category",
+          params: {}
+        }
+      ],
+      current: 0
+    };
+  },
+  onLoad() {},
+  methods: {
+	  onClickItem(e) {
+      if (this.current !== e.currentIndex) {
+        this.current = e.currentIndex;
+      }
+    }
+  }
+};
 </script>
 
-<style>
-	.content {
-		text-align: center;
-		height: 400upx;
-	}
-
-	.logo {
-		height: 200upx;
-		width: 200upx;
-		margin-top: 200upx;
-	}
-
-	.title {
-		font-size: 36upx;
-		color: #8f8f94;
-	}
+<style lang="scss">
+.tab-title {
+  position: relative;
+  .tab-inner {
+    width: 60%;
+    margin: 0 auto;
+  }
+  .iconsearch {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10%;
+  }
+}
 </style>

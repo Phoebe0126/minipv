@@ -55,33 +55,34 @@
       </view>
       <!-- 内容主体区域 -->
       <view class="comments-list">
-        <view 
-        class="comments-item"
-        v-for="item in hot"
-        :key="item.id">
-        <view class="user-info">
-          <!-- 用户头像 -->
-          <view class="user-avatar">
-            <image :src="item.user.avatar" mode="widthFix" />
-          </view>
-          <!-- 用户描述 -->
-          <view class="user-desc">
-            <view class="user-name">{{item.user.name}}</view>
-            <view class="user-time">{{item.cnTime}}</view>
-          </view>
-          <!-- 用户徽章 -->
-          <view class="user-badge">
-            <image v-for="item2 in item.user.title" :key="item2.icon" :src="item2.icon" mode="" />
-          </view>
+        <view class="comments-item" v-for="item in hot" :key="item.id">
+          <view class="user-info">
+            <!-- 用户头像 -->
+            <view class="user-avatar">
+              <image :src="item.user.avatar" mode="widthFix" />
+            </view>
+            <!-- 用户描述 -->
+            <view class="user-desc">
+              <view class="user-name">{{ item.user.name }}</view>
+              <view class="user-time">{{ item.cnTime }}</view>
+            </view>
+            <!-- 用户徽章 -->
+            <view class="user-badge">
+              <image
+                v-for="item2 in item.user.title"
+                :key="item2.icon"
+                :src="item2.icon"
+                mode=""
+              />
+            </view>
           </view>
           <!-- 评论内容 -->
           <view class="content-desc">
-            <view class="comment-content">{{item.content}}</view>
+            <view class="comment-content">{{ item.content }}</view>
             <view class="comment-likes">
-              <text class="iconfont icondianzan">{{item.size}}</text>
+              <text class="iconfont icondianzan">{{ item.size }}</text>
             </view>
           </view>
-        
         </view>
       </view>
     </view>
@@ -94,35 +95,40 @@
       </view>
       <!-- 内容主体区域 -->
       <view class="comments-list">
-        <view 
-        class="comments-item"
-        v-for="item in comment"
-        :key="item.id">
-        <view class="user-info">
-          <!-- 用户头像 -->
-          <view class="user-avatar">
-            <image :src="item.user.avatar" mode="widthFix" />
-          </view>
-          <!-- 用户描述 -->
-          <view class="user-desc">
-            <view class="user-name">{{item.user.name}}</view>
-            <view class="user-time">{{item.cnTime}}</view>
-          </view>
-          <!-- 用户徽章 -->
-          <view class="user-badge">
-            <image v-for="item2 in item.user.title" :key="item2.icon" :src="item2.icon" mode="" />
-          </view>
+        <view class="comments-item" v-for="item in comment" :key="item.id">
+          <view class="user-info">
+            <!-- 用户头像 -->
+            <view class="user-avatar">
+              <image :src="item.user.avatar" mode="widthFix" />
+            </view>
+            <!-- 用户描述 -->
+            <view class="user-desc">
+              <view class="user-name">{{ item.user.name }}</view>
+              <view class="user-time">{{ item.cnTime }}</view>
+            </view>
+            <!-- 用户徽章 -->
+            <view class="user-badge">
+              <image
+                v-for="item2 in item.user.title"
+                :key="item2.icon"
+                :src="item2.icon"
+                mode=""
+              />
+            </view>
           </view>
           <!-- 评论内容 -->
           <view class="content-desc">
-            <view class="comment-content">{{item.content}}</view>
+            <view class="comment-content">{{ item.content }}</view>
             <view class="comment-likes">
-              <text class="iconfont icondianzan">{{item.size}}</text>
+              <text class="iconfont icondianzan">{{ item.size }}</text>
             </view>
           </view>
-        
         </view>
       </view>
+    </view>
+    <!-- 下载图片区域 -->
+    <view class="download">
+      <view class="download-btn" @click="downloadPic">下载图片</view>
     </view>
   </view>
 </template>
@@ -130,7 +136,7 @@
 <script>
 import moment from "moment";
 // 引入图片滑动组件
-import touchSwiper from '@/components/touchSwiper'
+import touchSwiper from "@/components/touchSwiper";
 // 设置moment为中文显示
 moment.locale("zh-cn");
 export default {
@@ -176,31 +182,70 @@ export default {
         this.album = result.res.album;
         // 处理最热评论时间，变成xxx月前
         result.res.hot.forEach(v => {
-          v.cnTime = moment(v.atime * 1000).fromNow()
-        })
-        result.res.comment.forEach(v=> {
-          v.cnTime = moment(v.atime * 1000).fromNow()
-        })
-        this.hot = result.res.hot
-        this.comment = result.res.comment
+          v.cnTime = moment(v.atime * 1000).fromNow();
+        });
+        result.res.comment.forEach(v => {
+          v.cnTime = moment(v.atime * 1000).fromNow();
+        });
+        this.hot = result.res.hot;
+        this.comment = result.res.comment;
       });
     },
     // 处理图片滑动
-    handleSwiperAction (params) {
+    handleSwiperAction(params) {
       // 向左滑动,index--
-      if (params.direction === 'left' && this.imgIndex - 1 > 0) {
+      if (params.direction === "left" && this.imgIndex - 1 > 0) {
         this.imgIndex--;
-        this.getData()
-      } else if (params.direction === 'right' && this.imgIndex + 1 < getApp().globalData.imgList.length - 1) {
+        this.getData();
+      } else if (
+        params.direction === "right" &&
+        this.imgIndex + 1 < getApp().globalData.imgList.length - 1
+      ) {
         this.imgIndex++;
-        this.getData()
+        this.getData();
       } else {
         // 数组越界
         uni.showToast({
-          title: '暂时无更多数据',
-          icon: 'none'
+          title: "暂时无更多数据",
+          icon: "none"
         });
       }
+    },
+    // 下载图片
+    async downloadPic() {
+      await uni.showLoading({
+        title: "下载中"
+      });
+      // downLoadFile 下载到小程序内存
+      const res = await uni.downloadFile({
+        url: this.imgDetail.img
+      });
+      // statusCode tempFilePath
+      if (res[1].statusCode !== 200) {
+        uni.showToast({
+          title: "oops,出错了",
+          duration: 2000
+        });
+        return;
+      }
+      // saveImageToPhotosAlbum下载到本地
+      const result = await uni.saveImageToPhotosAlbum({
+        filePath: res[1].tempFilePath
+      });
+      // console.log(result);
+      // "saveImageToPhotosAlbum:ok" errMsg
+      uni.hideLoading()
+      // if (result[0].errMsg && result[0].errMsg === 'saveImageToPhotosAlbum:fail cancel') {
+      //   uni.showToast({
+      //     title: '下载失败',
+      //     icon: 'none'
+      //   })
+      //   return 
+      // }
+      uni.showToast({
+        title: '下载成功啦~',
+        duration: 2000
+      });
     }
   }
 };
@@ -271,104 +316,121 @@ export default {
           width: 180rpx;
           height: 180rpx;
         }
+      }
+      view.album-description {
+        padding-left: 20rpx;
+        flex: 3;
+        position: relative;
+        .album-info-text {
+          background-color: $color;
+          color: #fff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100rpx;
+          height: 50rpx;
+          border-radius: 10%;
         }
-         view.album-description {
-          padding-left: 20rpx;
-          flex: 3;
-          position: relative;
-          .album-info-text {
-              background-color: $color;
-              color: #fff;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 100rpx;
-              height: 50rpx;
-              border-radius: 10%;
-          }
-          .album-name {
-              color: #000;
-              padding: 10rpx 0;
-          }
-          .iconfont {
-              position: absolute;
-              top: 50%;
-              transform: translateY(-50%);
-              right: 10%;
-              font-size: 40rpx;
-          }
+        .album-name {
+          color: #000;
+          padding: 10rpx 0;
+        }
+        .iconfont {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 10%;
+          font-size: 40rpx;
         }
       }
     }
+  }
 }
- .comments {
-   .comments-title {
-     display: flex;
-     align-items: center;
+.comments {
+  .comments-title {
+    display: flex;
+    align-items: center;
     text.iconfont.iconhot1 {
       color: red;
       font-size: 40rpx;
     }
-     .comments-title-name {
-       font-weight: 600;
-       font-size: 28rpx;
-       margin-left: 10rpx;
-       color: #666;
+    .comments-title-name {
+      font-weight: 600;
+      font-size: 28rpx;
+      margin-left: 10rpx;
+      color: #666;
     }
   }
-   .comments-list {
-     .comments-item {
-       border-bottom: 10rpx solid #eee;
-       .user-info {
-         display: flex;
-         padding: 20rpx 0;
-         .user-avatar {
-            width: 15%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+  .comments-list {
+    .comments-item {
+      border-bottom: 10rpx solid #eee;
+      .user-info {
+        display: flex;
+        padding: 20rpx 0;
+        .user-avatar {
+          width: 15%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           image {
             width: 90%;
           }
         }
-         .user-desc {
-           display: flex;
-           .user-name {
-             color: #777;
+        .user-desc {
+          display: flex;
+          .user-name {
+            color: #777;
           }
-           .user-time {
-             color: #ccc;
-             font-size: 24rpx;
-             padding: 5rpx;
+          .user-time {
+            color: #ccc;
+            font-size: 24rpx;
+            padding: 5rpx;
           }
         }
-         .user-badge {
+        .user-badge {
           image {
             width: 40rpx;
             height: 40rpx;
             display: inline-block;
           }
         }
-       }
-         .content-desc {
-           display: flex;
-           padding: 30rpx 0;
-           .comment-content {
-             flex: 1;
-             padding-left: 15%;
-             color: #000;
-          }
-
-           .comment-likes {
-            text-align: right;
-          }
+      }
+      .content-desc {
+        display: flex;
+        padding: 30rpx 0;
+        .comment-content {
+          flex: 1;
+          padding-left: 15%;
+          color: #000;
         }
+
+        .comment-likes {
+          text-align: right;
+        }
+      }
     }
   }
 }
 .new {
   .iconpinglun {
     color: skyblue !important;
+  }
+}
+.download {
+  height: 100rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .download-btn {
+    width: 95%;
+    height: 80%;
+    font-size: 50rpx;
+    font-weight: 600;
+    background-color: $color;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

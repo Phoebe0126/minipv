@@ -12,6 +12,8 @@ export default {
             endTime: 0,
             touchStartX: 0,
             touchEndX: 0,
+            touchStartY: 0,
+            touchEndY: 0,
             interval: 2000,
             distance: 10
         }
@@ -20,16 +22,18 @@ export default {
         handleTouchStart (e) {
             this.startTime = Date.now()
             this.touchStartX = e.changedTouches[0].clientX
+            this.touchStartY = e.changedTouches[0].clientY
         },
         hanldeTouchEnd (e) {
             this.endTime = Date.now()
             this.touchEndX = e.changedTouches[0].clientX
+            this.touchEndY = e.changedTouches[0].clientY
             // 判断是否超时
             if (this.endTime - this.startTime > this.interval) {
                 return
             }
             // 判断是否超过一定滑动距离
-            if (Math.abs(this.touchEndX - this.touchStartX) < this.distance) {
+            if (Math.abs(this.touchEndX - this.touchStartX) < this.distance || Math.abs(this.touchEndY - this.touchStartY) > this.distance) {
                 return 
             }
             // 判断滑动的方向

@@ -23,6 +23,12 @@
 			"style": {
 				"navigationBarTitleText": "专辑详情"
 			}
+		},
+		{
+			"path": "pages/categoryDetail/index",
+			"style": {
+				"navigationBarTitleText": "分类详情"
+			}
 		}
 		
 	],
