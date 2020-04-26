@@ -13,7 +13,12 @@
 			"path": "pages/video/index"
 		},
 		{
-			"path": "pages/search/index"
+			"path": "pages/search/index",
+			"style": {
+				"navigationBarTitleText": "音乐",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black"
+			}
 		},
 		{
 			"path": "pages/album/index"
@@ -28,6 +33,18 @@
 			"path": "pages/categoryDetail/index",
 			"style": {
 				"navigationBarTitleText": "分类详情"
+			}
+		},
+		{
+			"path": "pages/videoPlay/index",
+			"style": {
+				"navigationBarTitleText": "音乐播放"
+			}
+		},
+		{
+			"path": "pages/videoCategoryDetail/index",
+			"style": {
+				"navigationBarTitleText": "分类音乐"
 			}
 		}
 		

@@ -17,7 +17,7 @@
         <video-main :urlObj="{url:items[current].url,params:items[current].params}"></video-main>
       </view>
       <view v-if="current === 4">
-        <video-cate></video-cate>
+        <video-cate :urlObj="{url:items[current].url}"></video-cate>
       </view>
     </view>
   </view>
@@ -39,7 +39,7 @@ export default {
         {
           title: "推荐",
           url: "http://157.122.54.189:9088/videoimg/v1/videowp/featured",
-          params: { limit: 30, skip: 0, order: "hot" }
+          params: { limit: 10, skip: 0, order: "hot" }
         },
         {
           title: "娱乐",
