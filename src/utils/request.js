@@ -14,7 +14,9 @@ export default (params) => {
             },
             complete() {
                 uni.hideLoading();
-            }
+            },
+            // 跨域
+            withCredentials: true
         })
     })
 }

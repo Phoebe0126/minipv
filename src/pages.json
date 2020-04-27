@@ -4,7 +4,12 @@
 			"path": "pages/home/index"
 		},
 		{
-			"path": "pages/horizontal/index"
+			"path": "pages/horizontal/index",
+			"style": {
+				"navigationBarTitleText": "音乐",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black"
+			}
 		},
 		{
 			"path": "pages/mine/index"
@@ -13,12 +18,7 @@
 			"path": "pages/video/index"
 		},
 		{
-			"path": "pages/search/index",
-			"style": {
-				"navigationBarTitleText": "音乐",
-				"navigationBarBackgroundColor": "#fff",
-				"navigationBarTextStyle": "black"
-			}
+			"path": "pages/search/index"
 		},
 		{
 			"path": "pages/album/index"
