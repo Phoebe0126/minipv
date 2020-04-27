@@ -7,9 +7,11 @@
       <!-- 静音 -->
       <view :class="['iconfont', muted ? 'iconjingyin' : 'iconshengyin']" @click="handleMuted"></view>
       <!-- 分享 -->
-      <view class="iconfont iconzhuanfa"></view>
+      <view class="iconfont iconzhuanfa">
+        <button open-type="share"></button>
+      </view>
       <!-- 下载 -->
-      <view class="iconfont">
+      <view class="iconfont" @click="handleDownLoad">
         <i class="download">&#xe823;</i>
       </view>
     </view>
@@ -81,6 +83,25 @@ export default {
         color: "#fff"
       });
       this.danmuValue = "";
+    },
+    // 下载视频
+    async handleDownLoad () {
+     await uni.showToast({
+        title: '下载视频中~',
+        icon: 'none'
+      });
+      // 下载到小程序内存中
+      const res = await uni.downloadFile({
+        url: this.videoObj.video
+      });
+      // 从小程序内存下载到本地
+      await uni.saveVideoToPhotosAlbum({
+        filePath: res[1].tempFilePath
+      });
+      uni.hideLoading();
+      await uni.showToast({
+        title: '下载成功~'
+      });
     }
   }
 };
@@ -123,6 +144,13 @@ export default {
     }
 
     .iconfont.iconzhuanfa {
+      position: relative;
+      button {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
     }
   }
   .uni-common-mt {
