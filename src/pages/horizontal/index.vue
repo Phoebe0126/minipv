@@ -1,35 +1,36 @@
 <template>
   <view class="music-wrapper">
-    <!-- 轮播图 -->
-    <swiper class="swiper" autoplay circular indicator-dots>
-      <swiper-item
-        v-for="item in banners"
-        :key="item.id"
-        class="swiper-item"
-        @animationfinish="animationfinish"
-      >
-        <image :src="item.pic" mode="" />
-      </swiper-item>
-    </swiper>
-    <!-- 歌单区域 -->
-    <view class="playlist-wrap">
-      <view class="playlist-item" v-for="item in playlists" :key="item.id">
-        <image :src="item.coverImgUrl" mode="aspectFill" />
-        <view class="playlist-desc">{{item.name}}</view>
-      </view>
-    </view>
+    <!-- 主页 -->
+    <music-home
+    :banners="banners"
+    :playlists="playlists"
+    :limit="limit"
+    v-if="currentPage === 'musicHome'"
+    @changetodetail="handleChangeToDetail"
+    ></music-home>
+    <!-- 歌单详情 -->
+    <playlist-detail
+    v-if="currentPage === 'playlistDetail'"
+    :playlist="playlist"
+    @backhome="handleBackHome"
+    @playmusic="handlePlayMusic"
+    ></playlist-detail>
     <!-- 播放音乐 -->
     <view class="music">
-      <play-music :src="music" :play.sync="audioPlay"></play-music>
+      <play-music :src="music" :poster="poster" :name="name" :autoplay="autoplay" :author="author" :play.sync="audioPlay"></play-music>
     </view>
   </view>
 </template>
 
 <script>
 import PlayMusic from '@/components/luch-audio/luch-audio'
+import MusicHome from '@/components/musicHome'
+import PlaylistDetail from '@/components/playlistDetail'
 export default {
   components: {
-    PlayMusic
+    PlayMusic,
+    MusicHome,
+    PlaylistDetail
   },
   data() {
     return {
@@ -37,17 +38,41 @@ export default {
       banners: [],
       // 音乐
       music: "",
-      audioPlay: true,
+      audioPlay: false,
       // 热门歌单
       playlists: [],
-      limit: 6
+      limit: 30,
+      currentPage: 'musicHome',
+      // 歌单
+      playlist: {},
+      // 海报
+      poster: '',
+      //歌曲名字
+      name: '',
+      // 歌曲作者
+      author: '',
+      // 自动播放音乐
+      autoplay: false,
+      // 是否有更多歌单
+      hasMore: true
     };
   },
   onLoad() {
     this.getBannerData();
-    this.playMusic("33894312");
     this.getPlayList();
   },
+   // 页面触底 加载新的歌单
+    onReachBottom () {
+        if (!this.hasMore) {
+            uni.showToast({
+                title: '暂时无更多~',
+                icon: 'none'
+            });
+        } else {
+            this.limit += 20;
+            this.getPlayList()
+        }
+    },
   methods: {
     async getBannerData() {
       const { banners } = await this.request({
@@ -55,57 +80,78 @@ export default {
       });
       this.banners = banners;
     },
-    // 创建播放音乐插件
-    async playMusic(id) {
-      const { data } = await this.request({
-        url: `http://47.106.170.118/song/url?id=${id}`
-      });
-      this.music = data[0].url;
-    },
     // 获取热门歌单
    async getPlayList () {
      const res = await this.request({
-       url: `http://47.106.170.118/top/playlist/highquality?limit=${this.limit}`
+       url: `http://47.106.170.118/top/playlist?cat=韩语&limit=${this.limit}`
       })
+      // 获取的歌单数不变
+      if (this.playlists.length === res.playlists.length) {
+        this.hasMore = false
+        uni.showToast({
+          title: '暂时无更多~',
+          icon: 'none'
+        });
+        return 
+      }
       this.playlists = res.playlists
-      console.log(res)
-    }
+      // 处理收听人数
+      this.playlists.forEach(v=> {
+        if (v.playCount > 10000) {
+          v.newPlayCount = (v.playCount / 10000).toFixed(1) + '万'
+        } else {
+          v.newPlayCount = v.playCount
+        }
+      })
+    },
+    // 切换到歌单详情页面
+    handleChangeToDetail (id, title) {
+      this.getPlayListDetail(id)
+      this.currentPage = 'playlistDetail'
+    },
+    // 获取歌单详情
+    async getPlayListDetail(id) {
+      const {playlist} = await this.request({
+        url: `http://47.106.170.118/playlist/detail?id=${id}`
+      })
+      this.playlist = playlist
+    },
+    // 返回到音乐首页
+    handleBackHome () {
+      this.currentPage = 'musicHome'
+      // 清空歌单列表
+      this.playlist = {}
+    },
+    // 播放音乐
+    async handlePlayMusic(musicObj) {
+      // const musicObj = {
+      //       poster: music.al.picUrl,
+      //       name: music.name,
+      //       author: music.ar[0].name,
+      //       id: music.id
+      //   }
+      // song/detail?ids=347230
+      const {data} = await this.request({
+        url: `http://47.106.170.118/song/url?id=${musicObj.id}`
+      })
+      this.music = data[0].url
+      this.poster = musicObj.poster
+      this.name = musicObj.name
+      this.author = musicObj.author
+      // 自动播放
+      this.autoplay = true
+      this.audioPlay = true
+    } 
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .music-wrapper {
-  .swiper {
-  height: calc(750rpx / 2.57);
-  image {
-    height: 100%;
-  }
-}
-.playlist-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20rpx;
-  .playlist-item {
-    flex: 33.33%;
-    padding: 10rpx 22rpx;
-    image {
-      width: 180rpx;
-      height: 180rpx;
-      border-radius: 5%;
-      box-shadow: 5rpx 5rpx 5rpx rgba(0, 0, 0, .3);
-    }
-    .playlist-desc {
-      font-size: 24rpx;
-      margin-top: 5rpx;
-      overflow: hidden;
-      color: #222;
-    }
-  }
-}
+  margin-bottom: 150rpx;
 .music {
   width: 100%;
-  position: absolute;
+  position: fixed;
   bottom: 0;
 }
 }

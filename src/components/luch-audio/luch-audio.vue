@@ -53,7 +53,7 @@ export default {
 	props: {
 		play: {
 			type: Boolean,
-			required: true
+			required: false
 		},
 		src: {
 			type: String
@@ -101,7 +101,7 @@ export default {
 		},
 		contextInit() {
 			let that = this;
-			that.$emit('update:play', false);
+			that.$emit('update:play', true);
 			let innerAudioContext = uni.createInnerAudioContext();
 			innerAudioContext.autoplay = that.autoplay;
 			innerAudioContext.src = that.src;

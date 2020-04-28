@@ -70,9 +70,9 @@
 			},
 			{
 				"pagePath": "pages/horizontal/index",
-				"text": "横屏",
-				"iconPath": "./static/icon/_img.png",
-				"selectedIconPath": "./static/icon/img.png"
+				"text": "音乐",
+				"iconPath": "./static/icon/_music.png",
+				"selectedIconPath": "./static/icon/music.png"
 			},
 			{
 				"pagePath": "pages/video/index",
