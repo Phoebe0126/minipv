@@ -77,7 +77,6 @@ export default {
          });
           return 
       }
-      console.log(data.videowp)
       this.imgList = [...this.imgList, ...data.videowp];
     },
     onClickItem(e) {

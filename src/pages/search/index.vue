@@ -66,7 +66,6 @@ export default {
   },
   methods: {
    async handleSearch() {
-      // console.log(this.keywords);
       const {result} = await this.request({
         url: `http://47.106.170.118/search?keywords=${this.keywords}`
       })
@@ -113,10 +112,12 @@ export default {
     padding: 20rpx;
     background-color: #eee;
     input {
-      width: 80%;
+      width: 100%;
       border-radius: 100rpx;
       background-color: #fff;
       padding: 0 20rpx;
+      display: flex;
+      align-items: center;
     }
     .btn {
       width: 100rpx;
@@ -125,7 +126,6 @@ export default {
       align-items: center;
       border-radius: 10rpx;
       padding: 10rpx;
-      margin-left: 20rpx;
     }
   }
   .songs {

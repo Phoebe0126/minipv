@@ -38,7 +38,6 @@ export default {
         url: this.urlObj.url
       });
       this.videowp = data.videowp
-      // console.log(data);
     },
     // 滚动到了底部
     handleScrollToLower() {
